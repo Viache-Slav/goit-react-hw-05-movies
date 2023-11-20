@@ -1,35 +1,36 @@
-// src/components/App.js
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import MovieDetails from './MovieDetails/MovieDetails';
-import Cast from './MovieDetails/Cast';
-import Reviews from './MovieDetails/Reviews';
-import MovieList from './Home/MovieList';
+// Modul App.jsx
+import { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-const Header = () => {
+import { Home } from 'components/Home/Home';
+import { StyledLink, Nav } from './App.styled';
+
+// Leniwe ładowanie komponentów za pomocą funkcji lazy
+const Movies = lazy(() => import('./Movies/Movies'));
+const MovieDetails = lazy(() => import('./MovieDetails/MovieDetails'));
+const Cast = lazy(() => import('components/Cast/Cast'));
+const Reviews = lazy(() => import('components/Reviews/Reviews'));
+
+// Główny komponent aplikacji
+export const App = () => {
   return (
-    <nav>
-      <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/movies">Movies</Link></li>
-      </ul>
-    </nav>
+    <>
+      {/* Blok nawigacyjny */}
+      <Nav>
+        <StyledLink to="/">Home</StyledLink>
+        <StyledLink to="/movies">Movies</StyledLink>
+      </Nav>
+      <Suspense fallback={<div>Loading...</div>}>
+        {/* Trasy komponentow */}
+        <Routes>
+          <Route path="*" element={<Home />} />
+          <Route path="/movies" element={<Movies />} />
+          <Route path="/movies/:movieId" element={<MovieDetails />}>
+            <Route path="cast" element={<Cast />} />
+            <Route path="reviews" element={<Reviews />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </>
   );
 };
-
-const App = () => {
-  return (
-    <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<MovieList />} />
-        <Route path="/movies" element={<MovieList />} />
-        <Route path="/movies/:movieId" element={<MovieDetails />} />
-        <Route path="/movies/:movieId/cast" element={<Cast />} />
-        <Route path="/movies/:movieId/reviews" element={<Reviews />} />
-      </Routes>
-    </Router>
-  );
-};
-
-export default App;
