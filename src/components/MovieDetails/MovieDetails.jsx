@@ -1,52 +1,88 @@
-// src/components/MovieDetails/MovieDetails.js
+// Modul MovieDetails.jsx 
+import { useParams, Link, Outlet, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import Cast from './Cast';
-import Reviews from './Reviews';
+import { getDetails } from 'consts/searchApi';
+import { Button, MovieImage, Wrapper, Paragraph, } from './MovieDetails.styled';
 
 const MovieDetails = () => {
+  // Pobranie identyfikatora filmu z parametrów adresu URL
   const { movieId } = useParams();
-  const [movieDetails, setMovieDetails] = useState(null);
+  // Użycie stanu movieDetails i funkcji setMovieDetails do przechowywania danych o filmie
+  const [movieDetails, setMovieDetails] = useState({});
+  // Użycie stanu genres i funkcji setGenres do przechowywania informacji o gatunkach filmu
+  const [genres, setGenres] = useState([]);
+  // Użycie hooka useNavigate do nawigacji pomiędzy stronami
+  let navigate = useNavigate();
 
+  // Efekt useEffect wywoływany po zamontowaniu komponentu lub zmianie identyfikatora filmu
   useEffect(() => {
-    const fetchMovieDetails = async () => {
+    // Funkcja asynchroniczna do pobierania szczegółowych danych o filmie
+    const asyncFunc = async () => {
       try {
-        if (!movieId) {
-          console.log('Waiting for movieId...');
-          return;
-        }
-
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}?api_key=fe36e1a920a96782eff1e1dab760f0ae&language=en-US`
-        );
-        const data = await response.json();
-        setMovieDetails(data);
-        console.log('Movie Details:', data);
+        // Wywołanie funkcji getDetails z identyfikatorem filmu
+        const movieDetails = await getDetails(movieId);
+        // Ustawienie stanu movieDetails za pomocą pobranych danych
+        setMovieDetails(movieDetails);
+        // Ustawienie stanu genres za pomocą gatunków filmu
+        setGenres(movieDetails.genres);
       } catch (error) {
-        console.error('Error fetching movie details:', error);
+        // Obsługa błędów w przypadku nieudanego pobierania danych
+        console.log('Error fetching movie details:', error);
       }
     };
+    asyncFunc();
+  }, [movieId]); // Zależność useEffect od zmiany identyfikatora filmu
 
-    fetchMovieDetails();
-  }, [movieId]);
-
-  if (!movieDetails) {
-    return <div>Loading...</div>;
-  }
-
+  // Renderowanie komponentu MovieDetails
   return (
-    <div>
-      <h2>{movieDetails.title}</h2>
-      <p>{movieDetails.overview}</p>
-      <p>Rating: {movieDetails.vote_average}</p>
-      <p>Release Date: {movieDetails.release_date}</p>
-
-      <Link to={`/movies/${movieId}/cast`}>Cast</Link>
-      <Link to={`/movies/${movieId}/reviews`}>Reviews</Link>
-
-      <Cast movieId={movieId} />
-      <Reviews movieId={movieId} />
-    </div>
+    <>
+    {/* Przycisk powrotu do poprzedniej strony */}
+      <Button onClick={() => navigate(-1)}>Go back</Button>
+      {/* Warunek sprawdzający, czy dane o filmie zostały pobrane */}
+      {movieDetails && (
+        <>
+        {/* Sekcja zawierająca szczegóły filmu */}
+          <Wrapper>
+            {/* Sekcja zawierająca obraz filmu */}
+            <MovieImage>
+              {/* Wyświetlenie obrazu filmu z dynamicznie generowanym adresem URL */}
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`}
+                alt={movieDetails?.title}
+                width={250}
+              />
+            </MovieImage>
+            {/* Sekcja zawierająca tytuł, ocenę, opis i gatunki filmu */}
+            <div>
+              <h2>{movieDetails?.title}</h2>
+              <div>User score: {movieDetails?.vote_average}</div>
+              <h3>Overview</h3>
+              <p>{movieDetails?.overview}</p>
+              <h4>Genres</h4>
+              {/* Wyświetlenie gatunków filmu w formie paragrafów */}
+              {genres.map(genre => (
+                <p key={genre.id}>{genre.name}</p>
+              ))}
+            </div>
+          </Wrapper>
+          {/* Dodatkowe informacje */}
+          <Paragraph>Additional information</Paragraph>
+          {/* Lista linków do stron Cast i Reviews z wykorzystaniem komponentu Link */}
+          <ul>
+            <li>
+              {/* Link do strony z obsadą filmu */}
+              <Link to="cast">Cast</Link>
+            </li>
+            <li>
+              {/* Link do strony z recenzjami filmu */}
+              <Link to="reviews">Reviews</Link>
+            </li>
+          </ul>
+          {/* Outlet do renderowania dzieci komponentu w zależności od aktualnej ścieżki */}
+          <Outlet />
+        </>
+      )}
+    </>
   );
 };
 
