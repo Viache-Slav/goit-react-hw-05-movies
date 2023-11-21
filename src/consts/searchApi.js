@@ -2,7 +2,6 @@
 import axios from 'axios';
 
 const API_KEY = process.env.REACT_APP_API_KEY;
-// const API_KEY = 'fe36e1a920a96782eff1e1dab760f0ae';
 
 // Funkcja do pobierania aktualnie popularnych filmów (trending)
 export const getTrending = async () => {
