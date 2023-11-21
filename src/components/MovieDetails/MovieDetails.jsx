@@ -45,9 +45,11 @@ const MovieDetails = () => {
           <Wrapper>
             {/* Sekcja zawierająca obraz filmu */}
             <MovieImage>
-              {/* Wyświetlenie obrazu filmu z dynamicznie generowanym adresem URL */}
+              {/* Warunek sprawdzający, czy istnieje ścieżka do plakatu filmu w danych o filmie (movieDetails)
+              Jeśli ścieżka istnieje, tworzymy pełny URL do plakatu z wykorzystaniem dynamicznej ścieżki
+              W przeciwnym razie używamy alternatywnego URL (np. dla obrazka zastępczego) lub pustego URL */}
               <img
-                src={`https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`}
+                src={movieDetails?.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : 'placeholder_image_url'}
                 alt={movieDetails?.title}
                 width={250}
               />

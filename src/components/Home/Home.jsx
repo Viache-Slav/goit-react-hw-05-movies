@@ -21,7 +21,9 @@ export const Home = () => {
   return (
     <>
     {/* Nagłówek informujący o aktualnych popularnych filmach */}
-      <h2>Trending today</h2>
+    <StyledLink to="/">
+      <h2 className="trending-header">Trending today</h2>
+    </StyledLink>
       {/* Warunek sprawdzający, czy istnieją popularne filmy */}
       {trendingMovies.map(movie => {
         // Destrukturyzacja obiektu filmu na title i id
