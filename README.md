@@ -13,5 +13,5 @@ To run the project on your hardware:
    - start the project with the command `npm start`
 
 ## screenshot
-![screenshot](./src/components/Screenshot_1.png)
-![screenshot](./src/components/Screenshot_3.png)
+![screenshot](./src/Screenshot_1.png)
+![screenshot](./src/Screenshot_3.png)
